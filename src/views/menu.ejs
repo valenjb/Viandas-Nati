@@ -1,0 +1,133 @@
+<%- include('partials/head.ejs') %>
+
+<div class="pagina-menu">
+
+    <div class="topbar-mobile">
+        <span class="marca">Viandas <em class="destacado">Nati</em></span>
+        <button type="button" class="btn-carrito btn-abrir-carrito">Carrito · <span class="carrito-count">0</span></button>
+    </div>
+
+    <nav class="navbar">
+        <span class="marca">Viandas <em class="destacado">Nati</em></span>
+        <div class="navbar-links">
+            <a href="/?tab=viandas" class="<%= tab === 'viandas' ? 'activo' : '' %>">Viandas semanales</a>
+            <a href="/?tab=catering" class="<%= tab === 'catering' ? 'activo' : '' %>">Catering</a>
+            <button type="button" class="btn-carrito btn-abrir-carrito">Carrito · <span class="carrito-count">0</span></button>
+        </div>
+    </nav>
+
+    <header class="encabezado">
+        <div class="hero-img carrusel-ambiente" role="img" aria-label="Mesa servida">
+            <%- include('partials/carrusel-ambiente.ejs') %>
+        </div>
+        <div class="filete"><span class="punto"></span></div>
+        <p class="kicker">Comida casera</p>
+        <h1 class="marca">Viandas <span class="destacado">Nati</span></h1>
+        <p class="eslogan">Hecho a fuego lento, como en casa</p>
+        <p class="descripcion">Viandas caseras hechas con la misma dedicación de siempre: ingredientes frescos, cocción lenta y las recetas de toda la vida. Elegí tus platos de la semana y armá tu pedido.</p>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <p class="kicker">Comida casera</p>
+            <h1 class="marca">Viandas <span class="destacado">Nati</span></h1>
+            <p class="eslogan">Hecho a fuego lento, como en casa</p>
+            <p class="descripcion">Viandas caseras hechas con la misma dedicación de siempre: ingredientes frescos, cocción lenta y las recetas de toda la vida. Elegí tus platos de la semana y armá tu pedido.</p>
+        </div>
+        <div class="hero-img-wrap">
+            <div class="hero-img carrusel-ambiente" role="img" aria-label="Mesa servida">
+                <%- include('partials/carrusel-ambiente.ejs') %>
+            </div>
+        </div>
+    </section>
+
+    <div class="pills">
+        <a href="/?tab=viandas" class="pill <%= tab === 'viandas' ? 'activa' : '' %>">Viandas semanales</a>
+        <a href="/?tab=catering" class="pill <%= tab === 'catering' ? 'activa' : '' %>">Catering</a>
+    </div>
+
+    <% if (tab === 'catering') { %>
+        <p class="catering-placeholder">El menú de catering todavía no está definido. Volvé pronto.</p>
+    <% } else { %>
+        <main class="secciones">
+            <% secciones.forEach(seccion => { %>
+                <section class="seccion">
+                    <h2><%= seccion.category %></h2>
+                    <div class="lista-platos">
+                        <% seccion.platos.forEach(plato => { %>
+                            <div class="fila-plato" data-id="<%= plato.id %>" data-name="<%= plato.name %>" data-price="<%= plato.price %>">
+                                <div class="fila-plato-contenido">
+                                    <% if (plato.image) { %>
+                                        <img class="miniatura-plato" src="<%= plato.image %>" alt="">
+                                    <% } %>
+                                    <div class="fila-plato-texto">
+                                        <div class="encabezado-fila">
+                                            <span class="nombre"><%= plato.name %></span>
+                                            <span class="precio tabular">$<%= Number(plato.price).toLocaleString('es-AR') %></span>
+                                        </div>
+                                        <% if (plato.description) { %>
+                                            <p class="desc"><%= plato.description %></p>
+                                        <% } %>
+                                        <div class="pie-fila">
+                                            <% if (plato.tag) { %>
+                                                <span class="etiqueta-plato"><%= plato.tag %></span>
+                                            <% } else { %>
+                                                <span></span>
+                                            <% } %>
+                                            <div class="controles-cantidad">
+                                                <div class="stepper stepper-plato">
+                                                    <button type="button" class="btn-restar" aria-label="Quitar uno" hidden>–</button>
+                                                    <span class="cantidad" hidden>0</span>
+                                                    <button type="button" class="btn-sumar" aria-label="Agregar uno">+</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                </section>
+            <% }) %>
+        </main>
+    <% } %>
+
+</div>
+
+<!-- Modal carrito -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-carrito">
+        <div class="modal-titulo">
+            <h2>Tu pedido</h2>
+            <button type="button" class="btn-cerrar-modal" id="btnCerrarModal" aria-label="Cerrar">x</button>
+        </div>
+        <div id="carritoItems">
+            <p class="carrito-vacio">Todavía no agregaste platos.</p>
+        </div>
+        <div class="modal-pie">
+            <span class="total-label">Total · <span id="modalTotal" class="tabular">$0</span></span>
+            <a href="#" class="btn-comprar" id="btnComprar" target="_blank" rel="noopener">Comprar</a>
+        </div>
+    </div>
+</div>
+
+<!-- WhatsApp flotante (consulta general, sin pedido) -->
+<a
+    href="https://wa.me/<%= whatsappNumber %>"
+    class="btn-whatsapp-flotante"
+    target="_blank"
+    rel="noopener"
+    aria-label="Consultar por WhatsApp"
+>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.35 5.06L2 22l5.06-1.35A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.2 14.2c-.22.62-1.28 1.2-1.77 1.24-.45.04-1.02.06-1.65-.1-.38-.1-.87-.28-1.5-.55-2.64-1.14-4.36-3.8-4.5-3.98-.13-.18-1.08-1.44-1.08-2.75 0-1.3.68-1.94.92-2.2.24-.26.53-.32.7-.32h.5c.16 0 .38-.06.6.46.22.53.75 1.83.82 1.96.07.13.11.29.02.47-.09.18-.14.29-.27.45-.13.16-.28.35-.4.47-.13.13-.27.28-.12.55.16.27.7 1.15 1.5 1.86 1.03.92 1.9 1.2 2.17 1.34.27.13.43.11.59-.07.16-.18.68-.79.86-1.06.18-.27.36-.22.6-.13.24.09 1.53.72 1.79.85.27.13.44.2.5.31.07.11.07.65-.15 1.27z"/>
+    </svg>
+</a>
+
+<script>
+    window.WHATSAPP_NUMBER = "<%= whatsappNumber %>";
+</script>
+<script src="/js/carrito.js"></script>
+<script src="/js/carrusel.js"></script>
+
+<%- include('partials/footer.ejs') %>

@@ -1,0 +1,180 @@
+/* ===== Encabezado mobile ===== */
+.hero-img {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    filter: sepia(0.25) saturate(0.7) contrast(1.05);
+}
+
+/* ===== Carrusel ambiental (sin flechas, avanza solo) ===== */
+.carrusel-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 900ms ease;
+}
+
+.carrusel-slide.activa {
+    opacity: 1;
+}
+
+.carrusel-slide.tint-burdeos {
+    background-color: color-mix(in srgb, var(--burdeos) 10%, var(--surface));
+}
+
+.carrusel-slide.tint-salvia {
+    background-color: color-mix(in srgb, var(--salvia) 12%, var(--surface));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .carrusel-slide {
+        transition: none;
+    }
+}
+
+.encabezado {
+    padding: 28px 24px 16px;
+    text-align: center;
+}
+
+.filete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.filete::before,
+.filete::after {
+    content: "";
+    height: 1px;
+    width: 40px;
+    background: var(--burdeos);
+}
+
+.filete .punto {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--burdeos);
+}
+
+.kicker {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--salvia);
+    margin-bottom: 10px;
+}
+
+.marca {
+    font-style: italic;
+    font-size: 38px;
+    line-height: 1.05;
+    margin-bottom: 8px;
+}
+
+.marca .destacado {
+    color: var(--burdeos);
+}
+
+.eslogan {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--salvia);
+    margin-bottom: 14px;
+}
+
+.descripcion {
+    font-size: 13px;
+    line-height: 1.7;
+    text-align: justify;
+    color: var(--text-secondary);
+}
+
+/* ===== Boton de carrito (compartido entre la barra mobile y el navbar desktop) ===== */
+.btn-carrito {
+    display: inline-flex;
+    align-items: center;
+    background: var(--burdeos);
+    color: var(--surface);
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    min-height: 40px;
+}
+
+/* ===== Barra superior mobile (sticky) ===== */
+.topbar-mobile {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--divider-seccion);
+}
+
+.topbar-mobile .marca {
+    font-size: 19px;
+    margin: 0;
+}
+
+/* ===== Navbar desktop ===== */
+.navbar {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .topbar-mobile {
+        display: none;
+    }
+
+    .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 26px 56px;
+        border-bottom: 3px solid var(--burdeos);
+    }
+
+    .navbar .marca {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .navbar-links {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+    }
+
+    .navbar-links a {
+        font-size: 14px;
+        color: var(--text-muted-2);
+        padding-bottom: 4px;
+        border-bottom: 2px solid transparent;
+    }
+
+    .navbar-links a.activo {
+        color: var(--text);
+        border-bottom-color: var(--burdeos);
+    }
+
+    .btn-carrito {
+        padding: 10px 22px;
+        min-height: auto;
+    }
+
+    .encabezado {
+        display: none;
+    }
+}

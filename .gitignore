@@ -1,0 +1,5 @@
+node_modules
+.env
+src/api/database/viandas.sqlite*
+src/public/uploads/platos/*
+!src/public/uploads/platos/.gitkeep

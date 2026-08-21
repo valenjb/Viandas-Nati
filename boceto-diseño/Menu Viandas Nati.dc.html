@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menú Viandas Nati — referencia de diseño</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#e5e1da;padding:40px;}
+  .stripe-img{background-image:repeating-linear-gradient(45deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 2px, transparent 2px, transparent 10px);display:flex;align-items:center;justify-content:center;text-align:center;}
+  .frame-label{font-family:Lora,serif;font-size:14px;font-weight:600;letter-spacing:0.02em;}
+  a{color:#6b2737;}
+  a:hover{color:#4d161c;}
+</style>
+</helmet>
+
+<div style="margin-bottom:60px;">
+  <div class="frame-label" style="color:#6b2737;margin-bottom:14px;font-size:16px;">Menú digital Viandas Nati · Classical Art Nouveau · paleta Burdeos &amp; Salvia</div>
+  <div id="3a" class="frame-label" style="color:#6b2737;margin-bottom:14px;">3a · Mobile</div>
+  <div style="width:390px;height:790px;border-radius:36px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,0.18);overflow:hidden;position:relative;border:1px solid rgba(0,0,0,0.06);">
+    <div style="width:100%;height:100%;overflow-y:auto;background:#f3ede2;color:#2a231c;font-family:'Lora',serif;">
+      <div class="stripe-img" style="width:100%;aspect-ratio:16/9;filter:sepia(0.25) saturate(0.7) contrast(1.05);color:#7c7263;font-family:monospace;font-size:11px;">foto: mesa servida</div>
+      <div style="padding:28px 24px 16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="flex:1;height:1px;background:#6b2737;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#6b2737;"></div>
+          <div style="flex:1;height:1px;background:#6b2737;"></div>
+        </div>
+        <div style="text-align:center;font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#7c8c6a;margin-bottom:10px;">Comida casera</div>
+        <h1 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic;font-size:38px;line-height:1.05;margin:0 0 8px;text-align:center;">Viandas <span style="color:#6b2737;">Nati</span></h1>
+        <p style="font-size:14px;color:#7c8c6a;margin:0 0 14px;font-style:italic;text-align:center;">Hecho a fuego lento, como en casa</p>
+        <p style="font-size:13px;line-height:1.7;color:#2a231c;margin:0;text-align:justify;">Cada semana preparo viandas frescas y caseras. Cada plato se cocina a mano, así que puede variar un poco de una semana a otra — la foto de arriba es solo una muestra de la cocina, no de cada plato puntual.</p>
+      </div>
+
+      <div style="display:flex;gap:10px;padding:4px 24px 20px;justify-content:center;">
+        <div style="border:1px solid #6b2737;color:#6b2737;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;">Viandas semanales</div>
+        <div style="border:1px solid color-mix(in srgb, #2a231c 16%, transparent);color:#6b6153;padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;">Catering</div>
+      </div>
+
+      <div style="padding:6px 24px 12px;">
+        <h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic;font-size:22px;margin:0 0 4px;">Entrada</h2>
+        <div style="height:1px;background:color-mix(in srgb, #2a231c 20%, transparent);margin-bottom:14px;"></div>
+        <div style="display:flex;flex-direction:column;margin-bottom:26px;">
+          <sc-for list="{{ nv3Entradas }}" as="d" hint-placeholder-count="2">
+            <div style="padding:15px 0;border-bottom:1px solid color-mix(in srgb, #2a231c 22%, transparent);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px;margin:0;">{{ d.name }}</h3>
+                <div style="font-weight:600;font-size:13px;white-space:nowrap;color:#6b2737;font-variant-numeric:tabular-nums;">{{ d.priceFmt }}</div>
+              </div>
+              <p style="font-size:12.5px;color:#4a4238;margin:5px 0 10px;line-height:1.55;">{{ d.desc }}</p>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:10.5px;letter-spacing:0.03em;text-transform:uppercase;color:#7c8c6a;border:1px solid #7c8c6a;border-radius:12px;padding:3px 10px;">{{ d.tag }}</span>
+                <button onclick="{{ d.inc }}" style="display:{{ d.addDisplay }};background:transparent;color:#6b2737;border:1px solid #6b2737;border-radius:20px;padding:7px 16px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:13px;cursor:pointer;">Agregar</button>
+                <div style="display:{{ d.stepperDisplay }};align-items:center;gap:12px;">
+                  <button onclick="{{ d.dec }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">–</button>
+                  <span style="font-size:13px;font-weight:600;min-width:14px;text-align:center;">{{ d.qty }}</span>
+                  <button onclick="{{ d.inc }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">+</button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic;font-size:22px;margin:0 0 4px;">Plato principal</h2>
+        <div style="height:1px;background:color-mix(in srgb, #2a231c 20%, transparent);margin-bottom:14px;"></div>
+        <div style="display:flex;flex-direction:column;margin-bottom:26px;">
+          <sc-for list="{{ nv3Principales }}" as="d" hint-placeholder-count="4">
+            <div style="padding:15px 0;border-bottom:1px solid color-mix(in srgb, #2a231c 22%, transparent);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px;margin:0;">{{ d.name }}</h3>
+                <div style="font-weight:600;font-size:13px;white-space:nowrap;color:#6b2737;font-variant-numeric:tabular-nums;">{{ d.priceFmt }}</div>
+              </div>
+              <p style="font-size:12.5px;color:#4a4238;margin:5px 0 10px;line-height:1.55;">{{ d.desc }}</p>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:10.5px;letter-spacing:0.03em;text-transform:uppercase;color:#7c8c6a;border:1px solid #7c8c6a;border-radius:12px;padding:3px 10px;">{{ d.tag }}</span>
+                <button onclick="{{ d.inc }}" style="display:{{ d.addDisplay }};background:transparent;color:#6b2737;border:1px solid #6b2737;border-radius:20px;padding:7px 16px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:13px;cursor:pointer;">Agregar</button>
+                <div style="display:{{ d.stepperDisplay }};align-items:center;gap:12px;">
+                  <button onclick="{{ d.dec }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">–</button>
+                  <span style="font-size:13px;font-weight:600;min-width:14px;text-align:center;">{{ d.qty }}</span>
+                  <button onclick="{{ d.inc }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">+</button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic;font-size:22px;margin:0 0 4px;">Postre</h2>
+        <div style="height:1px;background:color-mix(in srgb, #2a231c 20%, transparent);margin-bottom:14px;"></div>
+        <div style="display:flex;flex-direction:column;">
+          <sc-for list="{{ nv3Postres }}" as="d" hint-placeholder-count="2">
+            <div style="padding:15px 0;border-bottom:1px solid color-mix(in srgb, #2a231c 22%, transparent);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px;margin:0;">{{ d.name }}</h3>
+                <div style="font-weight:600;font-size:13px;white-space:nowrap;color:#6b2737;font-variant-numeric:tabular-nums;">{{ d.priceFmt }}</div>
+              </div>
+              <p style="font-size:12.5px;color:#4a4238;margin:5px 0 10px;line-height:1.55;">{{ d.desc }}</p>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:10.5px;letter-spacing:0.03em;text-transform:uppercase;color:#7c8c6a;border:1px solid #7c8c6a;border-radius:12px;padding:3px 10px;">{{ d.tag }}</span>
+                <button onclick="{{ d.inc }}" style="display:{{ d.addDisplay }};background:transparent;color:#6b2737;border:1px solid #6b2737;border-radius:20px;padding:7px 16px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:13px;cursor:pointer;">Agregar</button>
+                <div style="display:{{ d.stepperDisplay }};align-items:center;gap:12px;">
+                  <button onclick="{{ d.dec }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">–</button>
+                  <span style="font-size:13px;font-weight:600;min-width:14px;text-align:center;">{{ d.qty }}</span>
+                  <button onclick="{{ d.inc }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">+</button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="height:90px;"></div>
+      </div>
+
+      <div style="position:sticky;bottom:0;left:0;right:0;background:#2a231c;color:#f3ede2;padding:14px 20px;justify-content:space-between;align-items:center;border-top:2px solid #6b2737;display:{{ nv3BarDisplay }};">
+        <div style="font-size:13px;font-variant-numeric:tabular-nums;"><strong>{{ nv3Count }}</strong> items · {{ nv3TotalFmt }}</div>
+        <a href="{{ nv3WaUrl }}" target="_blank" rel="noopener" style="background:transparent;color:#c99a8e;text-decoration:none;border:1px solid #c99a8e;padding:8px 18px;border-radius:20px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:13px;">Ver pedido</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div id="3a-desktop" class="frame-label" style="color:#6b2737;margin-bottom:14px;">3a · Desktop</div>
+  <div style="width:1280px;height:820px;border-radius:10px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,0.18);overflow:hidden;position:relative;border:1px solid rgba(0,0,0,0.06);">
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:#e9dfd4;border-bottom:1px solid rgba(0,0,0,0.06);">
+      <div style="width:10px;height:10px;border-radius:50%;background:#e0a3a3;"></div>
+      <div style="width:10px;height:10px;border-radius:50%;background:#e8d18a;"></div>
+      <div style="width:10px;height:10px;border-radius:50%;background:#a6c9a6;"></div>
+    </div>
+    <div style="width:100%;height:calc(100% - 40px);overflow-y:auto;background:#f3ede2;color:#2a231c;font-family:'Lora',serif;position:relative;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:26px 56px;border-bottom:3px solid #6b2737;">
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:22px;">Viandas <em>Nati</em></div>
+        <div style="display:flex;gap:28px;align-items:center;">
+          <div style="border-bottom:2px solid #6b2737;color:#6b2737;font-weight:600;font-size:14px;padding-bottom:2px;">Viandas semanales</div>
+          <div style="color:#8a8074;font-size:14px;">Catering</div>
+          <button onclick="{{ nv3ToggleCart }}" style="background:#6b2737;color:#f3ede2;border:none;padding:8px 18px;border-radius:20px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:14px;cursor:pointer;">Carrito · {{ nv3Count }}</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center;padding:44px 56px 40px;">
+        <div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#7c8c6a;margin-bottom:14px;">Comida casera</div>
+          <h1 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic;font-size:54px;line-height:1.02;margin:0 0 16px;">Viandas <span style="color:#6b2737;">Nati</span></h1>
+          <p style="font-size:15px;color:#7c8c6a;margin:0 0 20px;font-style:italic;">Hecho a fuego lento, como en casa</p>
+          <p style="font-size:15px;line-height:1.75;color:#2a231c;margin:0;max-width:480px;text-align:justify;">Cada semana preparo viandas frescas y caseras. Cada plato se cocina a mano, así que puede variar un poco de una semana a otra — la foto es solo una muestra de la cocina, no de cada plato puntual.</p>
+        </div>
+        <div class="stripe-img" style="aspect-ratio:4/3;border-radius:4px;filter:sepia(0.25) saturate(0.7) contrast(1.05);border:4px solid #fff;outline:1px solid #6b2737;color:#7c7263;font-family:monospace;font-size:13px;">foto: mesa servida</div>
+      </div>
+
+      <div style="padding:8px 56px 8px;">
+        <h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic;font-size:26px;margin:0 0 4px;">Entrada</h2>
+        <div style="height:1px;background:color-mix(in srgb, #2a231c 20%, transparent);margin-bottom:6px;"></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);">
+          <sc-for list="{{ nv3Entradas }}" as="d" hint-placeholder-count="2">
+            <div style="padding:16px 20px 16px 0;border-bottom:1px solid color-mix(in srgb, #2a231c 22%, transparent);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px;margin:0;">{{ d.name }}</h3>
+                <div style="font-weight:600;font-size:13px;white-space:nowrap;color:#6b2737;font-variant-numeric:tabular-nums;">{{ d.priceFmt }}</div>
+              </div>
+              <p style="font-size:13px;color:#4a4238;margin:6px 0 10px;line-height:1.6;">{{ d.desc }}</p>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:10.5px;letter-spacing:0.03em;text-transform:uppercase;color:#7c8c6a;border:1px solid #7c8c6a;border-radius:12px;padding:3px 10px;">{{ d.tag }}</span>
+                <button onclick="{{ d.inc }}" style="display:{{ d.addDisplay }};background:transparent;color:#6b2737;border:1px solid #6b2737;border-radius:20px;padding:7px 16px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:13px;cursor:pointer;">Agregar</button>
+                <div style="display:{{ d.stepperDisplay }};align-items:center;gap:12px;">
+                  <button onclick="{{ d.dec }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">–</button>
+                  <span style="font-size:13px;font-weight:600;min-width:14px;text-align:center;">{{ d.qty }}</span>
+                  <button onclick="{{ d.inc }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">+</button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic;font-size:26px;margin:20px 0 4px;">Plato principal</h2>
+        <div style="height:1px;background:color-mix(in srgb, #2a231c 20%, transparent);margin-bottom:6px;"></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);">
+          <sc-for list="{{ nv3Principales }}" as="d" hint-placeholder-count="4">
+            <div style="padding:16px 20px 16px 0;border-bottom:1px solid color-mix(in srgb, #2a231c 22%, transparent);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px;margin:0;">{{ d.name }}</h3>
+                <div style="font-weight:600;font-size:13px;white-space:nowrap;color:#6b2737;font-variant-numeric:tabular-nums;">{{ d.priceFmt }}</div>
+              </div>
+              <p style="font-size:13px;color:#4a4238;margin:6px 0 10px;line-height:1.6;">{{ d.desc }}</p>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:10.5px;letter-spacing:0.03em;text-transform:uppercase;color:#7c8c6a;border:1px solid #7c8c6a;border-radius:12px;padding:3px 10px;">{{ d.tag }}</span>
+                <button onclick="{{ d.inc }}" style="display:{{ d.addDisplay }};background:transparent;color:#6b2737;border:1px solid #6b2737;border-radius:20px;padding:7px 16px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:13px;cursor:pointer;">Agregar</button>
+                <div style="display:{{ d.stepperDisplay }};align-items:center;gap:12px;">
+                  <button onclick="{{ d.dec }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">–</button>
+                  <span style="font-size:13px;font-weight:600;min-width:14px;text-align:center;">{{ d.qty }}</span>
+                  <button onclick="{{ d.inc }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">+</button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <h2 style="font-family:'Cormorant Garamond',serif;font-weight:400;font-style:italic;font-size:26px;margin:20px 0 4px;">Postre</h2>
+        <div style="height:1px;background:color-mix(in srgb, #2a231c 20%, transparent);margin-bottom:6px;"></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);">
+          <sc-for list="{{ nv3Postres }}" as="d" hint-placeholder-count="2">
+            <div style="padding:16px 20px 16px 0;border-bottom:1px solid color-mix(in srgb, #2a231c 22%, transparent);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+                <h3 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:18px;margin:0;">{{ d.name }}</h3>
+                <div style="font-weight:600;font-size:13px;white-space:nowrap;color:#6b2737;font-variant-numeric:tabular-nums;">{{ d.priceFmt }}</div>
+              </div>
+              <p style="font-size:13px;color:#4a4238;margin:6px 0 10px;line-height:1.6;">{{ d.desc }}</p>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:10.5px;letter-spacing:0.03em;text-transform:uppercase;color:#7c8c6a;border:1px solid #7c8c6a;border-radius:12px;padding:3px 10px;">{{ d.tag }}</span>
+                <button onclick="{{ d.inc }}" style="display:{{ d.addDisplay }};background:transparent;color:#6b2737;border:1px solid #6b2737;border-radius:20px;padding:7px 16px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:13px;cursor:pointer;">Agregar</button>
+                <div style="display:{{ d.stepperDisplay }};align-items:center;gap:12px;">
+                  <button onclick="{{ d.dec }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">–</button>
+                  <span style="font-size:13px;font-weight:600;min-width:14px;text-align:center;">{{ d.qty }}</span>
+                  <button onclick="{{ d.inc }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">+</button>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="height:32px;"></div>
+      </div>
+
+      <div style="display:{{ nv3CartDisplay }};position:absolute;inset:0;align-items:center;justify-content:center;background:rgba(42,35,28,0.45);z-index:20;">
+        <div style="width:440px;max-height:78%;overflow-y:auto;background:#fdfaf5;border-radius:8px;border:1px solid #6b2737;padding:28px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+            <h3 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:22px;margin:0;">Tu pedido</h3>
+            <button onclick="{{ nv3ToggleCart }}" style="background:none;border:none;color:#2a231c;font-size:20px;cursor:pointer;line-height:1;">×</button>
+          </div>
+          <div style="display:{{ nv3CartEmptyDisplay }};font-size:14px;color:#6b6153;margin-bottom:8px;">Todavía no agregaste platos.</div>
+          <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:18px;">
+            <sc-for list="{{ nv3CartItems }}" as="d" hint-placeholder-count="0">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid color-mix(in srgb, #2a231c 12%, transparent);padding-bottom:12px;">
+                <div style="flex:1;min-width:0;">
+                  <div style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:16px;">{{ d.name }}</div>
+                  <div style="font-size:12.5px;color:#6b2737;font-variant-numeric:tabular-nums;">{{ d.lineTotalFmt }}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <button onclick="{{ d.dec }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">–</button>
+                  <span style="font-size:13px;font-weight:600;min-width:14px;text-align:center;">{{ d.qty }}</span>
+                  <button onclick="{{ d.inc }}" style="width:22px;height:22px;border-radius:50%;border:1px solid #7c8c6a;background:transparent;color:#7c8c6a;font-weight:600;cursor:pointer;">+</button>
+                  <button onclick="{{ d.remove }}" style="background:none;border:none;color:#8a6b5a;font-size:13px;cursor:pointer;margin-left:4px;">Quitar</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;border-top:2px solid #6b2737;padding-top:14px;">
+            <div style="font-size:14px;"><strong>Total</strong> · {{ nv3TotalFmt }}</div>
+            <a href="{{ nv3WaUrl }}" target="_blank" rel="noopener" style="background:#6b2737;color:#fdfaf5;text-decoration:none;padding:9px 22px;border-radius:20px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:14px;">Comprar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DISHES = [
+  {id:'tarta', name:'Tarta de verdura', desc:'Tarta casera de acelga y queso, con masa hecha en casa.', tag:'Vegetariano', price:4200, cat:'Entrada'},
+  {id:'ensalada', name:'Ensalada de pollo grillado', desc:'Pollo grillado con hojas verdes, tomate y palta.', tag:'Liviano', price:3800, cat:'Entrada'},
+  {id:'milanesas', name:'Milanesas con puré', desc:'Milanesas de carne caseras, doradas y crocantes, con puré de papa casero.', tag:'Clásico', price:5200, cat:'Plato principal'},
+  {id:'pollo', name:'Pollo al horno con papas', desc:'Pollo al horno con hierbas y papas rústicas doradas.', tag:'Favorito', price:5000, cat:'Plato principal'},
+  {id:'guiso', name:'Guiso de lentejas', desc:'Guiso casero de lentejas con vegetales, ideal para los días fríos.', tag:'Casero', price:4600, cat:'Plato principal'},
+  {id:'wok', name:'Wok de vegetales y arroz', desc:'Mix de vegetales salteados con arroz integral.', tag:'Vegetariano', price:4400, cat:'Plato principal'},
+  {id:'flan', name:'Flan casero', desc:'Flan casero con dulce de leche.', tag:'Dulce', price:2200, cat:'Postre'},
+  {id:'budin', name:'Budín de naranja', desc:'Budín casero, esponjoso y con aroma a naranja.', tag:'Dulce', price:2000, cat:'Postre'}
+];
+
+const WHATSAPP_NUMBER = '5491100000000';
+
+function fmt(n) { return '$' + n.toLocaleString('es-AR'); }
+
+class Component extends DCLogic {
+  state = { cart: {}, cartOpen: false };
+  _handlers = {};
+
+  getHandler(key, factory) {
+    if (!this._handlers[key]) this._handlers[key] = factory();
+    return this._handlers[key];
+  }
+
+  bumpQty(id, delta) {
+    this.setState(s => ({ cart: { ...s.cart, [id]: Math.max(0, (s.cart[id] || 0) + delta) } }));
+  }
+
+  removeItem(id) {
+    this.setState(s => {
+      const cart = { ...s.cart };
+      delete cart[id];
+      return { cart };
+    });
+  }
+
+  toggleCart() {
+    this.setState(s => ({ cartOpen: !s.cartOpen }));
+  }
+
+  renderVals() {
+    const cart = this.state.cart;
+    const items = DISHES.map(d => {
+      const qty = cart[d.id] || 0;
+      return {
+        ...d,
+        qty,
+        addDisplay: qty === 0 ? 'inline-flex' : 'none',
+        stepperDisplay: qty > 0 ? 'flex' : 'none',
+        priceFmt: fmt(d.price),
+        lineTotalFmt: fmt(d.price * qty),
+        inc: this.getHandler(d.id + ':inc', () => () => this.bumpQty(d.id, 1)),
+        dec: this.getHandler(d.id + ':dec', () => () => this.bumpQty(d.id, -1)),
+        remove: this.getHandler(d.id + ':remove', () => () => this.removeItem(d.id))
+      };
+    });
+    const count = items.reduce((s, i) => s + i.qty, 0);
+    const total = items.reduce((s, i) => s + i.qty * i.price, 0);
+    const cartItems = items.filter(i => i.qty > 0);
+    const orderLines = cartItems.map(i => `- ${i.qty}x ${i.name}`).join('\n');
+    const text = encodeURIComponent(`Hola! Quiero pedir:\n${orderLines}\nTotal: ${fmt(total)}`);
+    return {
+      nv3Entradas: items.filter(i => i.cat === 'Entrada'),
+      nv3Principales: items.filter(i => i.cat === 'Plato principal'),
+      nv3Postres: items.filter(i => i.cat === 'Postre'),
+      nv3CartItems: cartItems,
+      nv3CartEmptyDisplay: cartItems.length === 0 ? 'block' : 'none',
+      nv3Count: count,
+      nv3TotalFmt: fmt(total),
+      nv3BarDisplay: count > 0 ? 'flex' : 'none',
+      nv3CartDisplay: this.state.cartOpen ? 'flex' : 'none',
+      nv3ToggleCart: this.getHandler('toggleCart', () => () => this.toggleCart()),
+      nv3WaUrl: `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`
+    };
+  }
+}
+</script>
+</body>
+</html>

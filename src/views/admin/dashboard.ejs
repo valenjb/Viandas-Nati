@@ -1,0 +1,77 @@
+<%- include('../partials/head.ejs') %>
+
+<div class="admin-topbar">
+    <span class="marca">Viandas <span class="destacado">Nati</span> · Admin</span>
+    <form action="/admin/logout" method="POST">
+        <button type="submit" class="btn btn-tenue">Cerrar sesión</button>
+    </form>
+</div>
+
+<div class="admin-contenido">
+    <div class="admin-header-fila">
+        <h1 style="font-size: 22px;">Platos del menú</h1>
+        <a href="/admin/platos/nuevo" class="btn btn-solido">+ Nuevo plato</a>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="tabla-platos">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% platos.forEach(plato => { %>
+                    <tr>
+                        <td>
+                            <% if (plato.image) { %>
+                                <img class="miniatura" src="<%= plato.image %>" alt="">
+                            <% } else { %>
+                                <div class="miniatura stripe-img"></div>
+                            <% } %>
+                        </td>
+                        <td><%= plato.name %></td>
+                        <td><%= plato.category %></td>
+                        <td class="tabular">$<%= Number(plato.price).toLocaleString('es-AR') %></td>
+                        <td>
+                            <% if (plato.active) { %>
+                                <span class="badge activo">Activo</span>
+                            <% } else { %>
+                                <span class="badge inactivo">Inactivo</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <div class="acciones-fila">
+                                <a href="/admin/platos/<%= plato.id %>/editar" class="btn btn-tenue">Editar</a>
+                                <% if (plato.active) { %>
+                                    <form action="/admin/platos/<%= plato.id %>/desactivar" method="POST">
+                                        <button type="submit" class="btn btn-tenue">Dar de baja</button>
+                                    </form>
+                                <% } else { %>
+                                    <form action="/admin/platos/<%= plato.id %>/activar" method="POST">
+                                        <button type="submit" class="btn btn-tenue">Dar de alta</button>
+                                    </form>
+                                <% } %>
+                                <form action="/admin/platos/<%= plato.id %>/eliminar" method="POST" onsubmit="return confirm('¿Eliminar este plato definitivamente?');">
+                                    <button type="submit" class="btn btn-peligro">Eliminar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                <% }) %>
+                <% if (platos.length === 0) { %>
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-muted);">Todavía no hay platos cargados.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('../partials/footer.ejs') %>

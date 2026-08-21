@@ -1,0 +1,29 @@
+{
+  "name": "viandas-nati",
+  "version": "1.0.0",
+  "description": "Menu digital de Viandas Nati con panel de administracion",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "seed": "node src/api/database/seed.js"
+  },
+  "keywords": [],
+  "author": "Valentino Jimeno Bravo",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "multer": "^2.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  }
+}

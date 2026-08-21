@@ -1,0 +1,301 @@
+/* ===== Pagina de menu ===== */
+.pagina-menu {
+    max-width: 100%;
+}
+
+.secciones {
+    padding-bottom: 8px;
+}
+
+.catering-placeholder {
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.hero {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .pagina-menu {
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    .hero {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 56px;
+        align-items: center;
+        padding: 44px 56px 40px;
+    }
+
+    .hero .marca {
+        font-size: 54px;
+    }
+
+    .hero .descripcion {
+        max-width: 480px;
+    }
+
+    .hero-img-wrap {
+        aspect-ratio: 4 / 3;
+        padding: 4px;
+        background: #fff;
+        outline: 1px solid var(--burdeos);
+        border-radius: 2px;
+    }
+
+    .hero-img-wrap .hero-img {
+        aspect-ratio: auto;
+        height: 100%;
+        border-radius: 1px;
+    }
+
+    .seccion {
+        padding: 8px 56px;
+    }
+
+    .seccion h2 {
+        font-size: 26px;
+    }
+
+    .lista-platos {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 40px;
+    }
+
+    .fila-plato {
+        padding: 16px 20px 16px 0;
+    }
+
+    .fila-plato .nombre {
+        font-size: 18px;
+    }
+
+    .fila-plato .desc {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .pills {
+        display: none;
+    }
+}
+
+/* ===== Login admin ===== */
+.pagina-login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.tarjeta-login {
+    width: 100%;
+    max-width: 380px;
+    background: var(--surface);
+    border: 1px solid var(--divider-seccion);
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+}
+
+.tarjeta-login .marca {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.form-login {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+    margin-top: 20px;
+}
+
+.form-login label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.form-login input {
+    padding: 10px 12px;
+    border: 1px solid var(--divider-seccion);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.mensaje-error {
+    color: #8a3b3b;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+/* ===== Dashboard admin ===== */
+.admin-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+    border-bottom: 3px solid var(--burdeos);
+}
+
+.admin-topbar .marca {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.admin-contenido {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+}
+
+.admin-header-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.tabla-platos {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--divider-seccion);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabla-platos th,
+.tabla-platos td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--divider-plato);
+    font-size: 13.5px;
+    vertical-align: middle;
+}
+
+.tabla-platos th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    background: color-mix(in srgb, var(--burdeos) 5%, var(--surface));
+}
+
+.tabla-platos tr:last-child td {
+    border-bottom: none;
+}
+
+.miniatura {
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.miniatura.stripe-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+}
+
+.badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
+.badge.activo {
+    background: color-mix(in srgb, var(--salvia) 20%, transparent);
+    color: #4a5a3c;
+}
+
+.badge.inactivo {
+    background: color-mix(in srgb, #8a3b3b 15%, transparent);
+    color: #8a3b3b;
+}
+
+.acciones-fila {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.acciones-fila form {
+    display: inline;
+}
+
+/* ===== Formulario admin (crear / editar plato) ===== */
+.form-plato {
+    max-width: 560px;
+    background: var(--surface);
+    border: 1px solid var(--divider-seccion);
+    border-radius: 8px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.campo label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--divider-seccion);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.campo textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+.imagen-actual {
+    width: 90px;
+    height: 90px;
+    border-radius: 6px;
+    object-fit: cover;
+    margin-bottom: 6px;
+}
+
+.lista-errores {
+    background: color-mix(in srgb, #8a3b3b 10%, var(--surface));
+    color: #8a3b3b;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin: 0 0 4px;
+}
+
+.form-acciones {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
