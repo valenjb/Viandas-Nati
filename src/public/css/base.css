@@ -3,11 +3,12 @@
     --bg: #f3ede2;
     --surface: #fdfaf5;
     --text: #2a231c;
-    --text-secondary: #4a4238;
-    --text-muted: #6b6153;
-    --text-muted-2: #8a8074;
+    --text-secondary: #3b332a;
+    --text-muted: #5c5245;
+    --text-muted-2: #665c4e;
     --burdeos: #6b2737;
-    --salvia: #7c8c6a;
+    --salvia: #7c8c6a;          /* bordes y adornos */
+    --salvia-texto: #5d6b4e;    /* la misma familia, mas oscura: legible como texto */
     --accent-on-dark: #c99a8e;
 
     --divider-plato: color-mix(in srgb, #2a231c 22%, transparent);
@@ -27,13 +28,29 @@ html,
 body {
     margin: 0;
     padding: 0;
+    font-weight: 500;
+}
+
+/* El atributo hidden gana siempre, aunque el elemento tenga display propio */
+[hidden] {
+    display: none !important;
+}
+
+/* Con el carrito abierto, la pagina de atras no se desplaza */
+body.modal-abierto {
+    overflow: hidden;
+}
+
+:focus-visible {
+    outline: 2px solid var(--burdeos);
+    outline-offset: 2px;
 }
 
 body {
     background: var(--bg);
     color: var(--text);
     font-family: var(--font-body);
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.5;
 }
 
@@ -65,7 +82,7 @@ input,
 select,
 textarea {
     font-family: inherit;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 img {

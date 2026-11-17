@@ -10,6 +10,10 @@ const { admin } = environments;
 
 // Vista login
 export const loginView = (req, res) => {
+    if (req.session.admin) {
+        return res.redirect("/admin");
+    }
+
     res.render("admin/login", {
         title: "Ingresar · Viandas Nati Admin",
         error: null

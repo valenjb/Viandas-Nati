@@ -8,70 +8,139 @@
 </div>
 
 <div class="admin-contenido">
+    <% if (flash) { %>
+        <p class="mensaje-ok" role="status"><%= flash %></p>
+    <% } %>
+
+    <%# Interruptor para dejar de tomar pedidos sin sacar el menu %>
+    <form action="/admin/ajustes/pedidos" method="POST" class="estado-pedidos <%= pedidosCerrados ? 'cerrado' : '' %>">
+        <p>
+            <strong><%= pedidosCerrados ? 'Pedidos cerrados' : 'Pedidos abiertos' %></strong>
+            <span><%= pedidosCerrados ? 'El menú se ve, pero los clientes no pueden pedir.' : 'Los clientes pueden armar y enviar su pedido.' %></span>
+        </p>
+        <input type="hidden" name="estado" value="<%= pedidosCerrados ? 'abrir' : 'cerrar' %>">
+        <button type="submit" class="btn <%= pedidosCerrados ? 'btn-solido' : 'btn-tenue' %>"><%= pedidosCerrados ? 'Abrir pedidos' : 'Cerrar pedidos' %></button>
+    </form>
+
     <div class="admin-header-fila">
-        <h1 style="font-size: 22px;">Platos del menú</h1>
-        <a href="/admin/platos/nuevo" class="btn btn-solido">+ Nuevo plato</a>
+        <h1>Menú de esta semana</h1>
+        <div class="admin-atajos">
+            <a href="/admin/semana" class="btn btn-solido">Armar la semana</a>
+            <a href="/admin/platos/nuevo" class="btn">+ Nuevo plato</a>
+            <a href="/admin/ajustes" class="btn btn-tenue">Aviso y datos</a>
+            <a href="/" target="_blank" rel="noopener" class="btn btn-tenue">Ver el menú</a>
+        </div>
     </div>
 
-    <div style="overflow-x: auto;">
-        <table class="tabla-platos">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Nombre</th>
-                    <th>Categoría</th>
-                    <th>Precio</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% platos.forEach(plato => { %>
-                    <tr>
-                        <td>
-                            <% if (plato.image) { %>
-                                <img class="miniatura" src="<%= plato.image %>" alt="">
-                            <% } else { %>
-                                <div class="miniatura stripe-img"></div>
-                            <% } %>
-                        </td>
-                        <td><%= plato.name %></td>
-                        <td><%= plato.category %></td>
-                        <td class="tabular">$<%= Number(plato.price).toLocaleString('es-AR') %></td>
-                        <td>
-                            <% if (plato.active) { %>
-                                <span class="badge activo">Activo</span>
-                            <% } else { %>
-                                <span class="badge inactivo">Inactivo</span>
-                            <% } %>
-                        </td>
-                        <td>
-                            <div class="acciones-fila">
-                                <a href="/admin/platos/<%= plato.id %>/editar" class="btn btn-tenue">Editar</a>
-                                <% if (plato.active) { %>
-                                    <form action="/admin/platos/<%= plato.id %>/desactivar" method="POST">
-                                        <button type="submit" class="btn btn-tenue">Dar de baja</button>
-                                    </form>
-                                <% } else { %>
-                                    <form action="/admin/platos/<%= plato.id %>/activar" method="POST">
-                                        <button type="submit" class="btn btn-tenue">Dar de alta</button>
-                                    </form>
-                                <% } %>
-                                <form action="/admin/platos/<%= plato.id %>/eliminar" method="POST" onsubmit="return confirm('¿Eliminar este plato definitivamente?');">
-                                    <button type="submit" class="btn btn-peligro">Eliminar</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                <% }) %>
-                <% if (platos.length === 0) { %>
-                    <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-muted);">Todavía no hay platos cargados.</td>
-                    </tr>
-                <% } %>
-            </tbody>
-        </table>
+    <%# Filtro: cambia entre los platos del menu y los guardados, sin recargar.
+        La pastilla de fondo (.filtro-pastilla) se desliza de un lado al otro. %>
+    <div class="filtro-platos" id="filtroPlatos" role="tablist" aria-label="Qué platos ver" data-vista="<%= vista %>">
+        <span class="filtro-pastilla" aria-hidden="true"></span>
+        <button type="button" role="tab" data-vista="visibles" aria-selected="<%= vista === 'visibles' %>">
+            Platos visibles <span class="filtro-cantidad"><%= cantidad.visibles %></span>
+        </button>
+        <button type="button" role="tab" data-vista="ocultos" aria-selected="<%= vista === 'ocultos' %>">
+            Platos ocultos <span class="filtro-cantidad"><%= cantidad.ocultos %></span>
+        </button>
     </div>
+
+    <div class="panel-platos" data-vista="visibles" role="tabpanel" <%= vista === 'visibles' ? '' : 'hidden' %>>
+        <% if (gruposVisibles.length === 0) { %>
+            <p class="admin-vacio">No hay platos visibles esta semana. Usá "Armar la semana" para elegirlos.</p>
+        <% } %>
+
+        <% gruposVisibles.forEach(grupo => { %>
+            <section class="grupo-admin">
+                <h2 class="admin-categoria"><%= grupo.category %></h2>
+                <ul class="lista-admin">
+                    <% grupo.platos.forEach(plato => { %>
+                        <%- include('../partials/plato-admin.ejs', { plato, vista: 'visibles' }) %>
+                    <% }) %>
+                </ul>
+            </section>
+        <% }) %>
+    </div>
+
+    <div class="panel-platos" data-vista="ocultos" role="tabpanel" <%= vista === 'ocultos' ? '' : 'hidden' %>>
+        <p class="admin-ayuda">No aparecen en el menú. Quedan guardados para volver a mostrarlos otra semana.</p>
+
+        <% if (cantidad.ocultos > 6) { %>
+            <div class="campo buscador-platos">
+                <label for="buscarPlato" class="visually-hidden">Buscar plato oculto</label>
+                <input type="search" id="buscarPlato" placeholder="Buscar por nombre…">
+            </div>
+        <% } %>
+
+        <% if (gruposOcultos.length === 0) { %>
+            <p class="admin-vacio">No hay platos ocultos.</p>
+        <% } %>
+
+        <% gruposOcultos.forEach(grupo => { %>
+            <section class="grupo-admin">
+                <h2 class="admin-categoria"><%= grupo.category %></h2>
+                <ul class="lista-admin">
+                    <% grupo.platos.forEach(plato => { %>
+                        <%- include('../partials/plato-admin.ejs', { plato, vista: 'ocultos' }) %>
+                    <% }) %>
+                </ul>
+            </section>
+        <% }) %>
+    </div>
+
+    <p class="admin-copia">
+        <a href="/admin/ajustes/copia">Descargar copia de seguridad</a>
+        <span>Guarda todos los platos, precios y textos en un archivo. No incluye las fotos.</span>
+    </p>
 </div>
+
+<script>
+    // ---------- Filtro "Platos visibles / Platos ocultos" ----------
+    const filtro = document.getElementById("filtroPlatos");
+
+    function mostrarVista(vista) {
+        // El cambio de data-vista es lo que desliza la pastilla (ver pages.css)
+        filtro.dataset.vista = vista;
+
+        filtro.querySelectorAll("[role=tab]").forEach((boton) => {
+            boton.setAttribute("aria-selected", boton.dataset.vista === vista);
+        });
+
+        document.querySelectorAll(".panel-platos").forEach((panel) => {
+            panel.hidden = panel.dataset.vista !== vista;
+        });
+
+        // La direccion recuerda la vista: si se recarga la pagina, queda en la misma
+        const direccion = new URL(location.href);
+        direccion.searchParams.set("vista", vista);
+        history.replaceState(null, "", direccion);
+    }
+
+    filtro.addEventListener("click", (e) => {
+        const boton = e.target.closest("[role=tab]");
+        if (boton && boton.dataset.vista !== filtro.dataset.vista) mostrarVista(boton.dataset.vista);
+    });
+
+    // ---------- Buscador de platos ocultos ----------
+    // Esconde las filas que no coinciden y las categorias que quedan vacias
+    const buscador = document.getElementById("buscarPlato");
+
+    if (buscador) {
+        buscador.addEventListener("input", () => {
+            const texto = buscador.value.trim().toLowerCase();
+
+            document.querySelectorAll('.panel-platos[data-vista="ocultos"] .grupo-admin').forEach((grupo) => {
+                let coincidencias = 0;
+
+                grupo.querySelectorAll(".plato-admin").forEach((fila) => {
+                    const coincide = fila.dataset.nombre.includes(texto);
+                    fila.hidden = !coincide;
+                    if (coincide) coincidencias++;
+                });
+
+                grupo.hidden = coincidencias === 0;
+            });
+        });
+    }
+</script>
 
 <%- include('../partials/footer.ejs') %>

@@ -62,15 +62,16 @@
 }
 
 .kicker {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--salvia);
+    color: var(--salvia-texto);
     margin-bottom: 10px;
 }
 
 .marca {
+    font-family: var(--font-display);
     font-style: italic;
     font-size: 38px;
     line-height: 1.05;
@@ -83,13 +84,13 @@
 
 .eslogan {
     font-style: italic;
-    font-size: 14px;
-    color: var(--salvia);
+    font-size: 16px;
+    color: var(--salvia-texto);
     margin-bottom: 14px;
 }
 
 .descripcion {
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.7;
     text-align: justify;
     color: var(--text-secondary);
@@ -99,14 +100,15 @@
 .btn-carrito {
     display: inline-flex;
     align-items: center;
+    gap: 0.3em; /* separa "Carrito ·", la cantidad y el total */
     background: var(--burdeos);
     color: var(--surface);
     border-radius: 20px;
     padding: 8px 18px;
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     font-weight: 600;
-    font-size: 14px;
-    min-height: 40px;
+    font-size: 14.5px;
+    min-height: 44px;
 }
 
 /* ===== Barra superior mobile (sticky) ===== */
@@ -123,8 +125,9 @@
 }
 
 .topbar-mobile .marca {
-    font-size: 19px;
+    font-size: 23px;
     margin: 0;
+    font-weight: 600;
 }
 
 /* ===== Navbar desktop ===== */
@@ -137,11 +140,16 @@
         display: none;
     }
 
+    /* Fija arriba: el carrito queda a mano aunque se baje hasta los postres */
     .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 26px 56px;
+        padding: 16px 56px;
+        background: var(--bg);
         border-bottom: 3px solid var(--burdeos);
     }
 
@@ -158,7 +166,7 @@
     }
 
     .navbar-links a {
-        font-size: 14px;
+        font-size: 15px;
         color: var(--text-muted-2);
         padding-bottom: 4px;
         border-bottom: 2px solid transparent;

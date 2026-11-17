@@ -1,0 +1,65 @@
+<%- include('../partials/head.ejs') %>
+
+<div class="admin-topbar">
+    <span class="marca">Viandas <span class="destacado">Nati</span> · Admin</span>
+    <a href="/admin" class="btn btn-tenue">Volver</a>
+</div>
+
+<div class="admin-contenido">
+    <% if (flash) { %>
+        <p class="mensaje-ok" role="status"><%= flash %></p>
+    <% } %>
+
+    <h1 class="admin-titulo">Armar la semana</h1>
+    <p class="admin-ayuda">Tildá los platos que van en el menú de esta semana. Al guardar, los demás quedan ocultos (no se borran).</p>
+
+    <form action="/admin/platos/semana" method="POST" class="form-semana">
+        <% grupos.forEach(grupo => { %>
+            <h2 class="admin-categoria"><%= grupo.category %></h2>
+            <ul class="lista-admin">
+                <% grupo.platos.forEach(plato => { %>
+                    <li>
+                        <label class="check-plato">
+                            <input type="checkbox" name="ids" value="<%= plato.id %>" <%= plato.active ? 'checked' : '' %>>
+                            <span class="nombre"><%= plato.name %></span>
+                            <span class="detalle tabular">$<%= Number(plato.price).toLocaleString('es-AR') %></span>
+                        </label>
+                    </li>
+                <% }) %>
+            </ul>
+        <% }) %>
+
+        <div class="barra-semana">
+            <div class="barra-semana-fila">
+                <span id="contadorSemana" role="status"></span>
+                <button type="button" class="btn-vaciar" id="btnDestildar">Destildar todos</button>
+            </div>
+            <div class="barra-semana-fila">
+                <%# Guarda lo tildado y abre el formulario; al crear el plato se vuelve aca %>
+                <button type="submit" name="despues" value="nuevo" class="btn">+ Nuevo plato</button>
+                <button type="submit" class="btn btn-solido">Guardar la semana</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const casilleros = Array.from(document.querySelectorAll('.form-semana input[name="ids"]'));
+    const contador = document.getElementById("contadorSemana");
+
+    function actualizarContador() {
+        const elegidos = casilleros.filter((casillero) => casillero.checked).length;
+        contador.textContent = elegidos === 1 ? "1 plato elegido" : `${elegidos} platos elegidos`;
+    }
+
+    casilleros.forEach((casillero) => casillero.addEventListener("change", actualizarContador));
+
+    document.getElementById("btnDestildar").addEventListener("click", () => {
+        casilleros.forEach((casillero) => { casillero.checked = false; });
+        actualizarContador();
+    });
+
+    actualizarContador();
+</script>
+
+<%- include('../partials/footer.ejs') %>

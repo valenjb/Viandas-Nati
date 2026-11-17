@@ -1,15 +1,20 @@
 <%- include('../partials/head.ejs') %>
+<%
+    // Cuando se llega desde "Armar la semana", al terminar se vuelve ahi
+    const volver = locals.volver || (plato && plato.volver) || '';
+    const urlVolver = volver === 'semana' ? '/admin/semana' : '/admin';
+%>
 
 <div class="admin-topbar">
     <span class="marca">Viandas <span class="destacado">Nati</span> · Admin</span>
-    <a href="/admin" class="btn btn-tenue">Volver</a>
+    <a href="<%= urlVolver %>" class="btn btn-tenue">Volver</a>
 </div>
 
 <div class="admin-contenido">
-    <h1 style="font-size: 22px; margin-bottom: 20px;"><%= plato && plato.id ? 'Editar plato' : 'Nuevo plato' %></h1>
+    <h1 class="admin-titulo"><%= plato && plato.id ? 'Editar plato' : 'Nuevo plato' %></h1>
 
     <% if (errores && errores.length > 0) { %>
-        <ul class="lista-errores">
+        <ul class="lista-errores" role="alert">
             <% errores.forEach(err => { %>
                 <li><%= err %></li>
             <% }) %>
@@ -22,25 +27,27 @@
         enctype="multipart/form-data"
         class="form-plato"
     >
+        <input type="hidden" name="volver" value="<%= volver %>">
+
         <div class="campo">
             <label for="name">Nombre</label>
-            <input type="text" name="name" id="name" required value="<%= plato ? plato.name : '' %>">
+            <input type="text" name="name" id="name" required maxlength="80" value="<%= plato ? plato.name : '' %>">
         </div>
 
         <div class="campo">
-            <label for="description">Descripción</label>
-            <textarea name="description" id="description"><%= plato ? (plato.description || '') : '' %></textarea>
+            <label for="description">Descripción (opcional)</label>
+            <textarea name="description" id="description" maxlength="200"><%= plato ? (plato.description || '') : '' %></textarea>
         </div>
 
         <div class="campo">
-            <label for="price">Precio</label>
-            <input type="number" name="price" id="price" min="0" step="1" required value="<%= plato ? plato.price : '' %>">
+            <label for="price">Precio ($)</label>
+            <input type="number" name="price" id="price" min="1" step="1" inputmode="numeric" required value="<%= plato ? plato.price : '' %>">
         </div>
 
         <div class="campo">
             <label for="category">Categoría</label>
             <select name="category" id="category" required>
-                <% ['Entrada', 'Plato principal', 'Postre'].forEach(cat => { %>
+                <% CATEGORIAS.forEach(cat => { %>
                     <option value="<%= cat %>" <%= plato && plato.category === cat ? 'selected' : '' %>><%= cat %></option>
                 <% }) %>
             </select>
@@ -48,22 +55,98 @@
 
         <div class="campo">
             <label for="tag">Etiqueta (opcional)</label>
-            <input type="text" name="tag" id="tag" placeholder="Vegetariano, Liviano, Clásico..." value="<%= plato ? (plato.tag || '') : '' %>">
+            <input type="text" name="tag" id="tag" maxlength="20" placeholder="Vegetariano, Liviano, Clásico..." value="<%= plato ? (plato.tag || '') : '' %>">
         </div>
 
         <div class="campo">
             <label for="image">Foto (opcional)</label>
-            <% if (plato && plato.image) { %>
-                <img class="imagen-actual" src="<%= plato.image %>" alt="">
-            <% } %>
+            <img
+                class="imagen-actual"
+                id="vistaPrevia"
+                src="<%= plato && plato.image ? urlImagen(plato.image, 220) : '' %>"
+                alt="Foto del plato"
+                <%= plato && plato.image ? '' : 'hidden' %>
+            >
             <input type="file" name="image" id="image" accept="image/png,image/jpeg,image/webp">
+            <p class="campo-ayuda">JPG, PNG o WEBP, hasta 5 MB.</p>
+
+            <% if (plato && plato.image) { %>
+                <label class="campo-check">
+                    <input type="checkbox" name="quitarImagen" value="1"> Quitar la foto actual
+                </label>
+            <% } %>
         </div>
 
         <div class="form-acciones">
-            <button type="submit" class="btn btn-solido">Guardar</button>
-            <a href="/admin" class="btn btn-tenue">Cancelar</a>
+            <button type="submit" class="btn btn-solido" id="btnGuardar">Guardar</button>
+            <a href="<%= urlVolver %>" class="btn btn-tenue">Cancelar</a>
         </div>
     </form>
+
+    <% if (plato && plato.id) { %>
+        <form action="/admin/platos/<%= plato.id %>/eliminar" method="POST" class="form-eliminar zona-eliminar" data-nombre="<%= plato.name %>">
+            <p>Eliminar borra el plato para siempre. Para sacarlo solo de esta semana, usá "Ocultar" en el panel.</p>
+            <button type="submit" class="btn btn-peligro">Eliminar este plato</button>
+        </form>
+    <% } %>
 </div>
+
+<script>
+    // Las fotos de celular pesan varios MB: antes de subirlas se achican en el
+    // navegador. Asi no chocan con el limite de tamaño y el menu carga rapido.
+    const LADO_MAXIMO = 1400;
+    const inputFoto = document.getElementById("image");
+    const vistaPrevia = document.getElementById("vistaPrevia");
+    const btnGuardar = document.getElementById("btnGuardar");
+
+    async function achicar(archivo) {
+        const imagen = await createImageBitmap(archivo, { imageOrientation: "from-image" });
+        const escala = Math.min(1, LADO_MAXIMO / Math.max(imagen.width, imagen.height));
+
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(imagen.width * escala);
+        canvas.height = Math.round(imagen.height * escala);
+
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#fff"; // fondo blanco por si la imagen tiene transparencia
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(imagen, 0, 0, canvas.width, canvas.height);
+
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+        return new File([blob], "foto.jpg", { type: "image/jpeg" });
+    }
+
+    inputFoto.addEventListener("change", async () => {
+        const archivo = inputFoto.files[0];
+        if (!archivo) return;
+
+        btnGuardar.disabled = true;
+
+        try {
+            const liviana = await achicar(archivo);
+
+            if (liviana.size < archivo.size) {
+                const transferencia = new DataTransfer();
+                transferencia.items.add(liviana);
+                inputFoto.files = transferencia.files;
+            }
+        } catch (e) {
+            // Si el navegador no puede procesarla, se sube la foto original
+        }
+
+        vistaPrevia.src = URL.createObjectURL(inputFoto.files[0]);
+        vistaPrevia.hidden = false;
+        btnGuardar.disabled = false;
+    });
+
+    const formEliminar = document.querySelector(".form-eliminar");
+
+    if (formEliminar) {
+        formEliminar.addEventListener("submit", (e) => {
+            const mensaje = `¿Eliminar "${formEliminar.dataset.nombre}" para siempre?\n\nSi solo querés sacarlo del menú de esta semana, usá "Ocultar".`;
+            if (!confirm(mensaje)) e.preventDefault();
+        });
+    }
+</script>
 
 <%- include('../partials/footer.ejs') %>

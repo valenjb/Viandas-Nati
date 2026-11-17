@@ -4,7 +4,11 @@
 
     <div class="topbar-mobile">
         <span class="marca">Viandas <em class="destacado">Nati</em></span>
-        <button type="button" class="btn-carrito btn-abrir-carrito">Carrito · <span class="carrito-count">0</span></button>
+        <% if (!pedidosCerrados) { %>
+            <button type="button" class="btn-carrito btn-abrir-carrito" aria-label="Ver mi pedido">
+                Carrito · <span class="carrito-count">0</span><span class="carrito-total" hidden></span>
+            </button>
+        <% } %>
     </div>
 
     <nav class="navbar">
@@ -12,7 +16,9 @@
         <div class="navbar-links">
             <a href="/?tab=viandas" class="<%= tab === 'viandas' ? 'activo' : '' %>">Viandas semanales</a>
             <a href="/?tab=catering" class="<%= tab === 'catering' ? 'activo' : '' %>">Catering</a>
-            <button type="button" class="btn-carrito btn-abrir-carrito">Carrito · <span class="carrito-count">0</span></button>
+            <% if (!pedidosCerrados) { %>
+                <button type="button" class="btn-carrito btn-abrir-carrito" aria-label="Ver mi pedido">Carrito · <span class="carrito-count">0</span><span class="carrito-total" hidden></span></button>
+            <% } %>
         </div>
     </nav>
 
@@ -47,18 +53,39 @@
     </div>
 
     <% if (tab === 'catering') { %>
-        <p class="catering-placeholder">El menú de catering todavía no está definido. Volvé pronto.</p>
+        <main class="catering">
+            <h2>Catering y eventos</h2>
+            <p>¿Tenés un evento o una reunión? Contanos qué necesitás y armamos una propuesta a medida.</p>
+            <a
+                href="https://wa.me/<%= whatsappNumber %>?text=<%= encodeURIComponent('Hola! Quería consultar por catering.') %>"
+                class="btn btn-solido"
+                target="_blank"
+                rel="noopener"
+            >Consultar por WhatsApp</a>
+        </main>
     <% } else { %>
         <main class="secciones">
+            <% if (pedidosCerrados) { %>
+                <p class="aviso-semana cerrado">Los pedidos de esta semana ya están cerrados.</p>
+            <% } %>
+
+            <% if (ajustes.aviso) { %>
+                <p class="aviso-semana"><%= ajustes.aviso %></p>
+            <% } %>
+
+            <% if (secciones.length === 0) { %>
+                <p class="menu-vacio">Todavía no cargamos el menú de esta semana. ¡Volvé pronto!</p>
+            <% } %>
+
             <% secciones.forEach(seccion => { %>
                 <section class="seccion">
                     <h2><%= seccion.category %></h2>
                     <div class="lista-platos">
                         <% seccion.platos.forEach(plato => { %>
-                            <div class="fila-plato" data-id="<%= plato.id %>" data-name="<%= plato.name %>" data-price="<%= plato.price %>">
+                            <div class="fila-plato <%= plato.agotado ? 'agotado' : '' %>" data-id="<%= plato.id %>">
                                 <div class="fila-plato-contenido">
                                     <% if (plato.image) { %>
-                                        <img class="miniatura-plato" src="<%= plato.image %>" alt="">
+                                        <img class="miniatura-plato" src="<%= urlImagen(plato.image, 128) %>" alt="" loading="lazy">
                                     <% } %>
                                     <div class="fila-plato-texto">
                                         <div class="encabezado-fila">
@@ -71,16 +98,18 @@
                                         <div class="pie-fila">
                                             <% if (plato.tag) { %>
                                                 <span class="etiqueta-plato"><%= plato.tag %></span>
-                                            <% } else { %>
-                                                <span></span>
                                             <% } %>
-                                            <div class="controles-cantidad">
-                                                <div class="stepper stepper-plato">
-                                                    <button type="button" class="btn-restar" aria-label="Quitar uno" hidden>–</button>
-                                                    <span class="cantidad" hidden>0</span>
-                                                    <button type="button" class="btn-sumar" aria-label="Agregar uno">+</button>
-                                                </div>
+                                            <% if (plato.agotado) { %>
+                                                <span class="etiqueta-agotado">Agotado</span>
+                                            <% } else if (!pedidosCerrados) { %>
+                                            <div class="stepper stepper-plato">
+                                                <button type="button" class="btn-restar" aria-label="Quitar uno de <%= plato.name %>" hidden>–</button>
+                                                <span class="cantidad" hidden>0</span>
+                                                <button type="button" class="btn-sumar" aria-label="Agregar <%= plato.name %> al pedido">
+                                                    <span aria-hidden="true">+</span><span class="texto-agregar">Agregar</span>
+                                                </button>
                                             </div>
+                                            <% } %>
                                         </div>
                                     </div>
                                 </div>
@@ -92,24 +121,50 @@
         </main>
     <% } %>
 
+    <footer class="pie">
+        <p class="marca">Viandas <span class="destacado">Nati</span></p>
+        <% if (ajustes.info) { %>
+            <p class="pie-info"><%= ajustes.info %></p>
+        <% } %>
+        <a href="https://wa.me/<%= whatsappNumber %>" class="btn" target="_blank" rel="noopener">Consultas por WhatsApp</a>
+    </footer>
+
 </div>
 
+<% if (!pedidosCerrados) { %>
 <!-- Modal carrito -->
 <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-carrito">
+    <div class="modal-carrito" id="modalCarrito" role="dialog" aria-modal="true" aria-labelledby="modalTitulo" tabindex="-1">
         <div class="modal-titulo">
-            <h2>Tu pedido</h2>
+            <h2 id="modalTitulo">Tu pedido</h2>
             <button type="button" class="btn-cerrar-modal" id="btnCerrarModal" aria-label="Cerrar">x</button>
         </div>
+
         <div id="carritoItems">
             <p class="carrito-vacio">Todavía no agregaste platos.</p>
         </div>
+
+        <div class="datos-pedido" id="datosPedido" hidden>
+            <div class="campo">
+                <label for="pedidoNombre">Tu nombre</label>
+                <input type="text" id="pedidoNombre" autocomplete="name" maxlength="60">
+            </div>
+            <div class="campo">
+                <label for="pedidoNota">Aclaraciones (opcional)</label>
+                <textarea id="pedidoNota" rows="2" maxlength="300" placeholder="Ej: sin sal, lo retiro el martes…"></textarea>
+            </div>
+        </div>
+
         <div class="modal-pie">
             <span class="total-label">Total · <span id="modalTotal" class="tabular">$0</span></span>
-            <a href="#" class="btn-comprar" id="btnComprar" target="_blank" rel="noopener">Comprar</a>
+            <button type="button" class="btn-vaciar" id="btnVaciar" hidden>Vaciar pedido</button>
         </div>
+
+        <a class="btn-comprar deshabilitado" id="btnComprar" target="_blank" rel="noopener" aria-disabled="true">Enviar pedido por WhatsApp</a>
     </div>
 </div>
+
+<% } %>
 
 <!-- WhatsApp flotante (consulta general, sin pedido) -->
 <a
@@ -124,10 +179,14 @@
     </svg>
 </a>
 
-<script>
-    window.WHATSAPP_NUMBER = "<%= whatsappNumber %>";
-</script>
-<script src="/js/carrito.js"></script>
+<% if (!pedidosCerrados) { %>
+    <%# Platos que se pueden pedir hoy: el carrito los lee de aca, en cualquier pestaña %>
+    <script id="menuData" type="application/json"><%- menuJson %></script>
+    <script>
+        window.WHATSAPP_NUMBER = "<%= whatsappNumber %>";
+    </script>
+    <script src="/js/carrito.js"></script>
+<% } %>
 <script src="/js/carrusel.js"></script>
 
 <%- include('partials/footer.ejs') %>

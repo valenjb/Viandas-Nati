@@ -1,32 +1,39 @@
 import multer from "multer";
-import { join, __dirname } from "../utils/index.js";
-import { existsSync, mkdirSync } from "fs";
+import { EXTENSIONES } from "../utils/imagenes.js";
 
-const uploadsDir = join(__dirname, "src/public/uploads/platos");
-
-if (!existsSync(uploadsDir)) {
-    mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadsDir),
-    filename: (req, file, cb) => {
-        const ext = file.originalname.split(".").pop();
-        cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}.${ext}`);
-    }
-});
+const TAMANIO_MAXIMO_MB = 5;
 
 function fileFilter(req, file, cb) {
-    if (/^image\/(jpeg|png|webp)$/.test(file.mimetype)) {
+    if (EXTENSIONES[file.mimetype]) {
         return cb(null, true);
     }
-    cb(new Error("Solo se permiten imagenes JPG, PNG o WEBP"));
+    cb(new Error("La foto tiene que ser JPG, PNG o WEBP"));
 }
 
+// La foto queda en memoria (req.file.buffer). Recien se guarda cuando el
+// plato paso todas las validaciones, asi no quedan fotos sueltas.
 const upload = multer({
-    storage,
+    storage: multer.memoryStorage(),
     fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB
-});
+    limits: { fileSize: TAMANIO_MAXIMO_MB * 1024 * 1024 }
+}).single("image");
 
-export default upload;
+// Recibe la foto del plato. Si falla (muy pesada o formato invalido) vuelve a
+// mostrar el formulario con el error, en vez de una pagina en blanco.
+const subirImagen = (req, res, next) => {
+    upload(req, res, (err) => {
+        if (!err) return next();
+
+        const mensaje = err.code === "LIMIT_FILE_SIZE"
+            ? `La foto pesa más de ${TAMANIO_MAXIMO_MB} MB. Probá con una más liviana.`
+            : err.message;
+
+        res.status(400).render("admin/form", {
+            title: "Viandas Nati · Admin",
+            plato: { id: req.params.id || null, ...req.body },
+            errores: [mensaje]
+        });
+    });
+};
+
+export default subirImagen;

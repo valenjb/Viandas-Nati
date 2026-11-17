@@ -1,0 +1,31 @@
+<%- include('../partials/head.ejs') %>
+
+<div class="admin-topbar">
+    <span class="marca">Viandas <span class="destacado">Nati</span> · Admin</span>
+    <a href="/admin" class="btn btn-tenue">Volver</a>
+</div>
+
+<div class="admin-contenido">
+    <h1 class="admin-titulo">Aviso y datos</h1>
+
+    <form action="/admin/ajustes" method="POST" class="form-plato">
+        <div class="campo">
+            <label for="aviso">Aviso de la semana</label>
+            <input type="text" name="aviso" id="aviso" maxlength="200" placeholder="Ej: Menú del 16 al 20 · Pedidos hasta el jueves" value="<%= ajustes.aviso %>">
+            <p class="campo-ayuda">Aparece destacado arriba del menú. Si lo dejás vacío, no se muestra nada.</p>
+        </div>
+
+        <div class="campo">
+            <label for="info">Datos al pie del menú</label>
+            <textarea name="info" id="info" rows="4" maxlength="600" placeholder="Ej: Entregas de lunes a viernes. Pago en efectivo o transferencia."><%= ajustes.info %></textarea>
+            <p class="campo-ayuda">Para lo que no cambia semana a semana: zona de entrega, días, formas de pago. Si lo dejás vacío, no se muestra nada.</p>
+        </div>
+
+        <div class="form-acciones">
+            <button type="submit" class="btn btn-solido">Guardar</button>
+            <a href="/admin" class="btn btn-tenue">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<%- include('../partials/footer.ejs') %>

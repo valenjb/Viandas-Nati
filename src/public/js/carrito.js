@@ -1,24 +1,72 @@
 (function () {
-    const CART_KEY = "viandasNatiCart";
-    const cart = load();
+    const CART_KEY = "viandasNatiCart";        // { idPlato: cantidad }
+    const DATOS_KEY = "viandasNatiDatos";      // { nombre, nota }
+    const ENVIADO_KEY = "viandasNatiEnviado";  // momento en que se envio el ultimo pedido
+    const HORAS_PARA_VACIAR = 6;
 
-    function load() {
+    // Platos visibles hoy, en el orden del menu: [{ id, name, price }]
+    const MENU = JSON.parse(document.getElementById("menuData").textContent);
+    const cart = cargarCarrito();
+    const datos = leer(DATOS_KEY) || {};
+
+    const overlay = document.getElementById("modalOverlay");
+    const btnCerrar = document.getElementById("btnCerrarModal");
+    const btnComprar = document.getElementById("btnComprar");
+    const btnVaciar = document.getElementById("btnVaciar");
+    const datosPedido = document.getElementById("datosPedido");
+    const inputNombre = document.getElementById("pedidoNombre");
+    const inputNota = document.getElementById("pedidoNota");
+
+    // ---------- Guardado en el navegador ----------
+    function leer(clave) {
         try {
-            const raw = localStorage.getItem(CART_KEY);
-            return raw ? JSON.parse(raw) : {};
+            return JSON.parse(localStorage.getItem(clave));
         } catch (e) {
-            return {};
+            return null;
         }
     }
 
-    function save() {
-        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    function guardar(clave, valor) {
+        try {
+            localStorage.setItem(clave, JSON.stringify(valor));
+        } catch (e) {
+            // Sin lugar o en modo privado: el carrito funciona igual, pero no se recuerda
+        }
     }
 
-    function getDishRows() {
-        return Array.from(document.querySelectorAll(".fila-plato"));
+    function borrar(clave) {
+        try {
+            localStorage.removeItem(clave);
+        } catch (e) {
+            // Idem guardar()
+        }
     }
 
+    function cargarCarrito() {
+        // Si el pedido ya se envio hace varias horas, se arranca de cero
+        const enviado = leer(ENVIADO_KEY);
+        if (enviado && Date.now() - enviado > HORAS_PARA_VACIAR * 60 * 60 * 1000) {
+            borrar(ENVIADO_KEY);
+            guardar(CART_KEY, {});
+            return {};
+        }
+
+        // Solo se conservan los platos que siguen en el menu de hoy
+        const guardado = leer(CART_KEY) || {};
+        const vigente = {};
+
+        MENU.forEach((plato) => {
+            const cantidad = Number(guardado[plato.id]);
+            if (Number.isInteger(cantidad) && cantidad > 0) {
+                vigente[plato.id] = cantidad;
+            }
+        });
+
+        guardar(CART_KEY, vigente);
+        return vigente;
+    }
+
+    // ---------- Calculos ----------
     function formatPrice(n) {
         return "$" + Number(n).toLocaleString("es-AR");
     }
@@ -34,42 +82,46 @@
         let total = 0;
         const items = [];
 
-        getDishRows().forEach((row) => {
-            const id = row.dataset.id;
-            const qty = cart[id] || 0;
+        MENU.forEach((plato) => {
+            const qty = cart[plato.id] || 0;
 
             if (qty > 0) {
-                const price = Number(row.dataset.price);
-                const name = row.dataset.name;
                 count += qty;
-                total += qty * price;
-                items.push({ id, name, price, qty });
+                total += qty * plato.price;
+                items.push({ id: plato.id, name: plato.name, price: plato.price, qty });
             }
         });
 
         return { count, total, items };
     }
 
-    // El stepper de la fila edita la cantidad del carrito directamente.
-    // En 0 solo se ve el "+"; al agregar aparecen el "-" y la cantidad.
-    function renderRow(row) {
-        const id = row.dataset.id;
-        const qty = cart[id] || 0;
-        const btnRestar = row.querySelector(".btn-restar");
-        const cantidadEl = row.querySelector(".cantidad");
+    function buildWhatsappUrl(items, total) {
+        const lineas = items.map((item) => `- ${item.qty}x ${item.name}`);
+        const partes = ["Hola! Quiero pedir:", ...lineas, `Total: ${formatPrice(total)}`];
 
-        btnRestar.hidden = qty === 0;
-        cantidadEl.hidden = qty === 0;
-        cantidadEl.textContent = qty;
+        if (datos.nombre) partes.push(`Nombre: ${datos.nombre}`);
+        if (datos.nota) partes.push(`Aclaraciones: ${datos.nota}`);
+
+        const numero = window.WHATSAPP_NUMBER || "";
+        return `https://wa.me/${numero}?text=${encodeURIComponent(partes.join("\n"))}`;
     }
 
-    function renderAllRows() {
-        getDishRows().forEach(renderRow);
+    // ---------- Dibujado ----------
+    // En 0 la fila muestra "+ Agregar"; con el plato en el pedido muestra - cantidad +
+    function renderRows() {
+        document.querySelectorAll(".fila-plato:not(.agotado)").forEach((row) => {
+            const qty = cart[row.dataset.id] || 0;
+            const cantidadEl = row.querySelector(".cantidad");
+
+            row.classList.toggle("en-carrito", qty > 0);
+            row.querySelector(".btn-restar").hidden = qty === 0;
+            cantidadEl.hidden = qty === 0;
+            cantidadEl.textContent = qty;
+        });
     }
 
     function renderCarritoItems(items) {
         const contenedor = document.getElementById("carritoItems");
-        if (!contenedor) return;
 
         if (items.length === 0) {
             contenedor.innerHTML = '<p class="carrito-vacio">Todavía no agregaste platos.</p>';
@@ -98,98 +150,130 @@
             .join("");
     }
 
-    function buildWhatsappUrl(items, total) {
-        if (items.length === 0) return "#";
+    function renderLinkPedido(items, total) {
+        const vacio = items.length === 0;
 
-        const numero = window.WHATSAPP_NUMBER || "";
-        const lineas = items.map((item) => `- ${item.qty}x ${item.name}`).join("\n");
-        const mensaje = `Hola! Quiero pedir:\n${lineas}\nTotal: ${formatPrice(total)}`;
+        btnComprar.classList.toggle("deshabilitado", vacio);
+        btnComprar.setAttribute("aria-disabled", vacio ? "true" : "false");
 
-        return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+        if (vacio) {
+            btnComprar.removeAttribute("href");
+        } else {
+            btnComprar.href = buildWhatsappUrl(items, total);
+        }
     }
 
-    function renderSummary() {
+    function render() {
         const { count, total, items } = computeTotals();
+        const vacio = count === 0;
 
         document.querySelectorAll(".carrito-count").forEach((el) => {
             el.textContent = count;
         });
 
-        const modalTotal = document.getElementById("modalTotal");
-        if (modalTotal) modalTotal.textContent = formatPrice(total);
+        // En mobile el boton de arriba tambien muestra cuanto va sumando el pedido
+        document.querySelectorAll(".carrito-total").forEach((el) => {
+            el.hidden = vacio;
+            el.textContent = ` · ${formatPrice(total)}`;
+        });
 
+        document.getElementById("modalTotal").textContent = formatPrice(total);
+        datosPedido.hidden = vacio;
+        btnVaciar.hidden = vacio;
+
+        renderRows();
         renderCarritoItems(items);
-
-        const url = buildWhatsappUrl(items, total);
-        const btnComprar = document.getElementById("btnComprar");
-        if (btnComprar) btnComprar.href = url;
+        renderLinkPedido(items, total);
     }
 
+    // ---------- Cambios en el pedido ----------
     function setQty(id, qty) {
-        const next = Math.max(0, qty);
-
-        if (next === 0) {
-            delete cart[id];
+        if (qty > 0) {
+            cart[id] = qty;
         } else {
-            cart[id] = next;
+            delete cart[id];
         }
 
-        save();
-        renderAllRows();
-        renderSummary();
-    }
-
-    function addOne(id) {
-        setQty(id, (cart[id] || 0) + 1);
-    }
-
-    function removeOne(id) {
-        setQty(id, (cart[id] || 0) - 1);
-    }
-
-    function removeAll(id) {
-        setQty(id, 0);
+        // Si se modifica despues de enviar, vuelve a contar como pedido en curso
+        borrar(ENVIADO_KEY);
+        guardar(CART_KEY, cart);
+        render();
     }
 
     document.addEventListener("click", (e) => {
-        const fila = e.target.closest(".fila-plato");
-        if (fila) {
-            const id = fila.dataset.id;
-            if (e.target.closest(".btn-sumar")) addOne(id);
-            else if (e.target.closest(".btn-restar")) removeOne(id);
+        const fila = e.target.closest(".fila-plato, .carrito-item");
+        if (!fila) return;
+
+        const id = fila.dataset.id;
+        const actual = cart[id] || 0;
+
+        if (e.target.closest(".btn-sumar")) setQty(id, actual + 1);
+        else if (e.target.closest(".btn-restar")) setQty(id, actual - 1);
+        else if (e.target.closest(".btn-quitar")) setQty(id, 0);
+    });
+
+    btnVaciar.addEventListener("click", () => {
+        if (!confirm("¿Vaciar el pedido?")) return;
+
+        Object.keys(cart).forEach((id) => delete cart[id]);
+        guardar(CART_KEY, cart);
+        render();
+    });
+
+    btnComprar.addEventListener("click", (e) => {
+        if (btnComprar.classList.contains("deshabilitado")) {
+            e.preventDefault();
             return;
         }
 
-        const itemCarrito = e.target.closest(".carrito-item");
-        if (itemCarrito) {
-            const id = itemCarrito.dataset.id;
-            if (e.target.closest(".btn-sumar")) addOne(id);
-            else if (e.target.closest(".btn-restar")) removeOne(id);
-            else if (e.target.closest(".btn-quitar")) removeAll(id);
-        }
+        guardar(ENVIADO_KEY, Date.now());
     });
 
-    const overlay = document.getElementById("modalOverlay");
-    const btnCerrar = document.getElementById("btnCerrarModal");
+    // ---------- Nombre y aclaraciones ----------
+    inputNombre.value = datos.nombre || "";
+    inputNota.value = datos.nota || "";
 
-    function abrirModal() {
-        if (overlay) overlay.classList.add("abierto");
+    function actualizarDatos() {
+        datos.nombre = inputNombre.value.trim();
+        datos.nota = inputNota.value.trim();
+        guardar(DATOS_KEY, datos);
+
+        const { total, items } = computeTotals();
+        renderLinkPedido(items, total);
+    }
+
+    inputNombre.addEventListener("input", actualizarDatos);
+    inputNota.addEventListener("input", actualizarDatos);
+
+    // ---------- Modal ----------
+    let botonQueAbrio = null;
+
+    function abrirModal(e) {
+        botonQueAbrio = e.currentTarget;
+        overlay.classList.add("abierto");
+        document.body.classList.add("modal-abierto");
+        document.getElementById("modalCarrito").focus();
     }
 
     function cerrarModal() {
-        if (overlay) overlay.classList.remove("abierto");
+        overlay.classList.remove("abierto");
+        document.body.classList.remove("modal-abierto");
+        if (botonQueAbrio) botonQueAbrio.focus();
     }
 
     document.querySelectorAll(".btn-abrir-carrito").forEach((btn) => {
         btn.addEventListener("click", abrirModal);
     });
-    if (btnCerrar) btnCerrar.addEventListener("click", cerrarModal);
-    if (overlay) {
-        overlay.addEventListener("click", (e) => {
-            if (e.target === overlay) cerrarModal();
-        });
-    }
 
-    renderAllRows();
-    renderSummary();
+    btnCerrar.addEventListener("click", cerrarModal);
+
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) cerrarModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && overlay.classList.contains("abierto")) cerrarModal();
+    });
+
+    render();
 })();

@@ -1,0 +1,43 @@
+<%# Fila de un plato en el panel. Recibe: plato, vista ("visibles" u "ocultos") %>
+<li class="plato-admin <%= plato.active ? '' : 'oculto' %>" data-nombre="<%= plato.name.toLowerCase() %>">
+    <% if (plato.image) { %>
+        <img class="miniatura" src="<%= urlImagen(plato.image, 96) %>" alt="">
+    <% } else { %>
+        <div class="miniatura stripe-img"></div>
+    <% } %>
+
+    <div class="plato-admin-info">
+        <p class="nombre"><%= plato.name %></p>
+        <p class="detalle tabular">
+            $<%= Number(plato.price).toLocaleString('es-AR') %><% if (plato.tag) { %> · <%= plato.tag %><% } %>
+        </p>
+    </div>
+
+    <% if (!plato.active) { %>
+        <span class="badge inactivo">Oculto</span>
+    <% } else if (plato.agotado) { %>
+        <span class="badge agotado">Agotado</span>
+    <% } else { %>
+        <span class="badge activo">Visible</span>
+    <% } %>
+
+    <div class="acciones-fila">
+        <a href="/admin/platos/<%= plato.id %>/editar" class="btn btn-tenue">Editar</a>
+
+        <% if (plato.active) { %>
+            <form action="/admin/platos/<%= plato.id %>/<%= plato.agotado ? 'reponer' : 'agotar' %>" method="POST">
+                <input type="hidden" name="vista" value="<%= vista %>">
+                <button type="submit" class="btn btn-alternar <%= plato.agotado ? '' : 'btn-tenue' %>"><%= plato.agotado ? 'Reponer' : 'Agotar' %></button>
+            </form>
+            <form action="/admin/platos/<%= plato.id %>/desactivar" method="POST">
+                <input type="hidden" name="vista" value="<%= vista %>">
+                <button type="submit" class="btn btn-alternar btn-tenue">Ocultar</button>
+            </form>
+        <% } else { %>
+            <form action="/admin/platos/<%= plato.id %>/activar" method="POST">
+                <input type="hidden" name="vista" value="<%= vista %>">
+                <button type="submit" class="btn btn-alternar">Mostrar</button>
+            </form>
+        <% } %>
+    </div>
+</li>
